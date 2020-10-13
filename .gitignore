@@ -1,0 +1,12 @@
+.DS_Store
+dist/*
+build/*
+!build/icons
+!build/pack.json
+!build/quickpkg
+package-lock.json
+node_modules/
+npm-debug.log
+npm-debug.log.*
+thumbs.db
+!.gitkeep
