@@ -95,18 +95,8 @@ export default {
     mounted() {
         console.log("进入页面不让调整窗口")
         console.log(this.remember);
-        // let width = screen.width
-        // let height = screen.height
-        // let y = (height - 470)/2
-        // let x =  (width - 800)/2
-        // window.moveTo(x,y)
-        // console.log(x,y,'xxxxxxx22222')
-        window.resizeTo(470,800);
-
-        
     },
     // beforeRouteLeave(to, from, next) {
-        
     //     next();
     // },
     methods: {
@@ -134,13 +124,8 @@ export default {
                         this.$router.push({
                             path: '/'
                         })
-                        // ipcToLogined().then(()=>{})
-                        // ipcToResize(true).then(()=>{})
+                        ipcToLogined().then(()=>{})
                         loginStore.set("isLogin",true)
-                        // let width = screen.width
-                        // let height = screen.height
-                        window.resizeTo(1000,750);
-                        this.$bus.$emit('winCenter',1000,750)
                     }).catch(() => {
                         this.loading = false
                     })

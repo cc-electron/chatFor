@@ -6,14 +6,19 @@ import {
   dialog,
   Menu,
   ipcMain,
-  screen
+  Tray,
+  screen,
+  nativeImage,
 } from "electron";
 const isDev = require("electron-is-dev");
 const menuTemplate = require('./menu')
 const Store = require('electron-store')
+const path = require('path')
 import {loginStore} from '../tool/storage'
 import ipcMainFun from '../tool/ipcMain'
 import {newWindow} from './AppWindow'
+
+
 
 
 
@@ -33,10 +38,14 @@ const winURL = process.env.NODE_ENV === 'development'
   ? MAINURL
   : `file://${__dirname}/index.html`
 // let win;
-
+let tray = null
+app.isQuiting = false;
   
   
 function createWindow() {
+  
+  console.log(__static,'23333')
+
   // 设置原生应用菜单
   let menu = Menu.buildFromTemplate(menuTemplate.template)
   Menu.setApplicationMenu(menu)
@@ -51,14 +60,15 @@ function createWindow() {
   //   defaultWidth: 1000,
   //   defaultHeight: 800
   // });
+  // 'x': mainWindowState.x,
+  // 'y': mainWindowState.y,
+  // 'width': mainWindowState.width,
+  // 'height': mainWindowState.height,
+
   // width: 470,
   // height: 800,
 
   mainWindow = new BrowserWindow({
-    // 'x': mainWindowState.x,
-    // 'y': mainWindowState.y,
-    // 'width': mainWindowState.width,
-    // 'height': mainWindowState.height,
     // width: 470,
     // height: 800,
     width: 1000,
@@ -70,9 +80,10 @@ function createWindow() {
     devTools: false,
     show: true
   });
+  
   // mainWindow.setResizable(false) // 用户是否可以手动调整窗口大小。
 
-  // mainWindow.setTitle('超信')
+  mainWindow.setTitle('超信')
   // mainWindow.getNormalBounds()
 
   mainWindow.loadURL(winURL);
@@ -88,12 +99,41 @@ function createWindow() {
   // console.log('关闭主窗口')
   mainWindow.on('close', (event) => {
       // event.preventDefault();
+      // // mainWindow.setSkipTaskbar(true)
+      // mainWindow.hide()
+
+      // console.log(mainWindow.isVisible(),'isVisible')
+      // if (process.platform === 'darwin') {
+      //   // 回收BrowserWindow对象
+      //   event.preventDefault()
+      //   // mainWindow.hide()
+      //   mainWindow.minimize()
+      // } else {
+      //   mainWindow.hide()
+      //   mainWindow.setSkipTaskbar(true)
+      //   event.preventDefault()
+      // }
+
+      // 回收BrowserWindow对象
+      // 窗口缩小到最小才能关闭程序
+      if(mainWindow.isMinimized()||app.isQuiting){
+        mainWindow = null;
+      }else{
+        event.preventDefault();
+        // mainWindow.minimize();
+        mainWindow.hide();
+      }
+
   });
   // console.log('关闭主窗口')
   mainWindow.on('closed', () => {
-    loginWindow = null;
-    mainWindow = null
+    console.log('23333close')
+    // loginWindow = null;
+    mainWindow = null;
+  
   })
+  // win.isVisible() ? win.hide() : win.show();
+  
 
   // 生产环境
   // if (!isDev) {
@@ -150,6 +190,9 @@ function createWindow() {
 }
 
 
+
+
+
 //...
 // 第二个实例打开时执行的程序
 app.on('second-instance', (event, argv) => {
@@ -159,7 +202,10 @@ app.on('second-instance', (event, argv) => {
   });
   console.log('argv: ',argv)
 });
-app.on('ready', createWindow)
+app.on('ready', ()=>{
+  createWindow();
+  handleTray()
+})
 
 app.on('before-quit',()=>{
   console.log('强制退出前！！！')
@@ -175,7 +221,9 @@ app.on('window-all-closed', () => {
   }
 })
 
+// 当应用被激活时发出。 各种操作都可以触发此事件, 例如首次启动应用程序、尝试在应用程序已运行时或单击应用程序的坞站或任务栏图标时重新激活它。
 app.on('activate', () => {
+  mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
   if (mainWindow === null) {
     createWindow()
   }
@@ -243,6 +291,136 @@ app.on('ready', () => {
   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 })
  */
+function handleTray(){
+  console.log('设置托盘')
+  let timer = null
+  let count = 0
+  // if (process.platform === 'darwin') {
+  //   tray = new Tray(nativeImage.createEmpty());
+  //   // tray.setImage();
+  //   const imgages = nativeImage.createFromPath(path.resolve(__dirname, '../../build/icons/icon.ico'))
+  //   imgages.setTemplateImage(true)
+  //   // imgages.isMacTemplateImage(true)
+  //   tray = new Tray(imgages)
+  // }else{
+  //   tray = new Tray(`${__static}/icon.ico`)
+  // }
+
+  // const contextMenu = Menu.buildFromTemplate([
+  //     {
+  //         label: '退出',
+  //         click: function(){
+  //             app.quit();
+  //         }
+  //     }
+  // ]);
+
+  // tray.setContextMenu(contextMenu);
+  // tray.setToolTip('应用标题');
+
+  // // 任务栏点击事件
+  // // let timeCount = 0
+  // // tray.on('click', function (Event) {
+  // //   setTimeout(() => {
+  // //     if (timeCount === 0) {
+  // //       console.log('单机事件11111111')
+  // //       timeCount = 0
+  // //     }
+  // //   }, 300)
+  // // })
+  
+
+  // tray.on('click',function(){
+  //   mainWindow.show();
+  // })
+  // // tray.on('left-click',function(){
+  // //   mainWindow.show();
+  // // })
+  // // tray.on('right-click',(e,b,p)=> {
+  // //   console.log('2333click')
+  // //   console.log(e,b,p)
+  // //   mainWindow.show();
+  // //   // mainWindow.setSkipTaskbar(false);
+  // // })
+
+  // if (mainWindow) {
+  //   if (mainWindow.isMinimized()) mainWindow.restore()
+  //   if (process.platform !== 'darwin') {
+  //     mainWindow.show()
+  //     mainWindow.setSkipTaskbar(false)
+  //   }
+  //   mainWindow.focus()
+  // }
+  const MenuTray = Menu.buildFromTemplate([
+  {
+    label: '打开超信',
+    click: () => {
+      mainWindow.show()
+    }
+  },
+  {
+    label: 'for radio',
+    click: () => {
+      console.log(234567654567)
+      // shell.openExternal('https://frequencecountry.mirandais.fr')
+    }
+  },
+  {
+    label: 'for facebook',
+    click: () => {
+      console.log(234567654567)
+      // shell.openExternal('https://www.facebook.com/Frequence-Country-862322540540302/')
+    }
+  },
+  {
+    label: '退出程序',
+    click: () => {
+      app.isQuiting = true
+      app.quit()
+    }
+  },
+  {
+    label: 'ping',
+    click: () => {
+      mainWindow.webContents.send('ping')
+    }
+  }
+])
+
+  mainWindow.setSkipTaskbar(true)
+
+  let unread 
+  let read 
+
+  if(isDev){
+    unread = path.join(__dirname, '../../static/icons/icons.png')
+    read = path.join(__dirname, '../../static/icons/icons.png')
+  }else{
+    unread = path.join(__dirname, '/static/icons/icons.png')
+    read = path.join(__dirname, '/static/icons/icons.png')
+  }
+
+  let imgRead = nativeImage.createFromPath(read)
+  let imgUnread = nativeImage.createFromPath(unread)
+
+  // let tray = new Tray(imgages)
+  let tray = new Tray(imgRead)
+  tray.setImage(imgUnread)
+  tray.destroy()
+  tray = new Tray(imgRead)
+
+  tray.setImage(imgUnread)
+  
+  tray.setToolTip('提示title')
+  tray.setContextMenu(MenuTray)
+
+  // 双击 托盘图标 打开窗口
+  tray.on('double-click',function(){
+      mainWindow.show()
+  })
+
+}
+
 
  let createLoginWins = () => {
 

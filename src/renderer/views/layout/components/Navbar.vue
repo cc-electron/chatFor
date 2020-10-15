@@ -49,11 +49,7 @@ export default {
       loginStore.set("isLogin",false)
       removeToken()
       window.location.reload()
-      this.$router.push("/login")
-      window.resizeTo(470,800);
-      // Bus.$emit('winCenter')
-      
-      // ipcToLogout().then(()=>{})
+      ipcToLogout().then(()=>{})
       // this.$store.dispatch('LogOut').then(() => {
       //   location.reload() // 为了重新实例化vue-router对象 避免bug
       // })

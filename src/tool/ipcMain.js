@@ -17,12 +17,9 @@ const ipcMainFun = (mainWindow,loginWindow)=>{
     let settingsWindow
     ipcMain.on('synchronous-message', (event, arg) => {
         if (arg === 'center') {
-
             mainWindow.center()
             console.log("window 居中显示")
-
             // mainWindowState.manage(mainWindow);
-
         }
     })
 
@@ -93,22 +90,13 @@ const ipcMainFun = (mainWindow,loginWindow)=>{
 
     // 登陆处理逻辑 -- 显示父级页面
     ipcMain.on('logined', (event, arg) => {
-        // mainWindow.show()
-        // loginWindow.hide()
-
-        // consoles.log('2333显示父级页面');
-        // loginWindow.setSize(1000, 700)
-        // loginWindow.center()
-        // mainWindow.setSize(1000, 700)
+        mainWindow.setSize(1000, 700)
+        mainWindow.center()
         mainWindow.setResizable(true)
     })
     ipcMain.on('logout', (event, arg) => {
-
-        console.log('2333重建登陆页面')
-        // loginWindow.show()
-        // loginWindow.setSize(470, 800)
-        // loginWindow.center()
-
+        mainWindow.setSize(470, 800)
+        mainWindow.center()
         mainWindow.setResizable(false)
     })
 
