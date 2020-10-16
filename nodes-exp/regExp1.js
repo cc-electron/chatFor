@@ -122,3 +122,23 @@ datas && datas.some((vd, vindex) => {
 // 'name:angelica'.scan /(?<!nick_name:)(angelica)/#angelica
 
 
+function splitIt(s) {
+    return s
+        // 直接 split 不行，但是可以先 replace 再 split
+        // 原因不明，如果谁知道告诉一声，谢谢！！！
+        .replace(/(?:(?<=(^|\])[^[]*)\s){1,}(?=.*?\[)/g, "|")
+        .split("|")
+        .map(s => s.replace(/[[\]]/g, ""));
+}
+
+let datass = "23/23 23/25 23/[blue 1]/25 [1 foo bar]/[red]/1 23/[blue]/2 23/2 [blue]/2 [blue flow]/2";
+let b = splitIt(datass)
+console.log(b ,'bbbb');
+// [ '23/23',
+//   '23/25',
+//   '23/blue 1/25',
+//   '1 foo bar/red/1',
+//   '23/blue/2',
+//   '23/2',
+//   'blue/2',
+//   'blue flow/2' ]

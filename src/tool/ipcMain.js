@@ -93,11 +93,13 @@ const ipcMainFun = (mainWindow)=>{
         mainWindow.setSize(1000, 700)
         mainWindow.center()
         mainWindow.setResizable(true)
+        mainWindow.setSkipTaskbar(true)
     })
     ipcMain.on('logout', (event, arg) => {
         mainWindow.setSize(470, 800)
         mainWindow.center()
         mainWindow.setResizable(false)
+        mainWindow.setSkipTaskbar(true)
     })
 
 }

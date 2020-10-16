@@ -9,6 +9,7 @@ import {
   Tray,
   screen,
   nativeImage,
+  // IOCounters
 } from "electron";
 const isDev = require("electron-is-dev");
 const menuTemplate = require('./menu')
@@ -18,7 +19,8 @@ import {loginStore} from '../tool/storage'
 import ipcMainFun from '../tool/ipcMain'
 import {newWindow} from './AppWindow'
 
-
+// let countsf = IOCounters
+// console.log(countsf,'countsf',IOCounters)
 
 
 
@@ -44,11 +46,27 @@ app.isQuiting = false;
   
 function createWindow() {
   
-  console.log(__static,'23333')
+  console.log(__static,'23333',path.join(__static, '/photo.png'))
 
   // 设置原生应用菜单
   let menu = Menu.buildFromTemplate(menuTemplate.template)
   Menu.setApplicationMenu(menu)
+  // 设置扩展栏菜单
+  const dockMenu = Menu.buildFromTemplate([
+      {
+        label: 'New Window',
+        click () { console.log('New Window') }
+      }, {
+        label: 'New Window with Settings',
+        submenu: [
+          { label: 'Basic' },
+          { label: 'Pro' }
+        ]
+      },
+      { label: 'New Command...' }
+    ])
+    
+    app.dock.setMenu(dockMenu)
   /**
    * Initial window options
    */
@@ -59,6 +77,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     // width: 470,
     // height: 800,
+    // title: 'chaoxin',
     width: 1000,
     height: 700,
 		useContentSize: true,
@@ -66,8 +85,12 @@ function createWindow() {
 			nodeIntegration: true, // 添加这一配置
 		},
     devTools: false,
-    show: true
+    show: true,
+    icon: path.join(__static, '/photo.png')
   });
+  if (process.platform === 'darwin') {
+      app.dock.setIcon(path.join(__static, '/photo.png'));
+  }
 
   mainWindow.setTitle('超信')
   // mainWindow.getNormalBounds()
@@ -76,8 +99,6 @@ function createWindow() {
   // let installed = BrowserWindow.getDevToolsExtensions()
   // console.log(installed);
 
-  // const view = new BrowserView();
- 
   mainWindow.on('close', (event) => {
       // 回收BrowserWindow对象
       // 窗口缩小到最小才能关闭程序
@@ -87,17 +108,65 @@ function createWindow() {
         event.preventDefault();
         // mainWindow.minimize();
         app.isQuiting = true
+        console.log(loginStore.get("isLogin"),'islogin2333')
+
+        console.log(tray,'istray')
+        
+        
+        if(loginStore.get("isLogin")){
+          loginStore.set("isLogin",false)
+          console.log(loginStore.get("isLogin"),'islogin??')
+        }
         mainWindow.hide();
+        mainWindow.setSkipTaskbar(true);
       }
+      
 
   });
   // console.log('关闭主窗口')
   mainWindow.on('closed', () => {
     console.log('23333close')
-    // loginWindow = null;
     mainWindow = null;
   
   })
+
+   // const view = new BrowserView();
+  // app.dock.setBadge('.');
+  
+  mainWindow.on('blur', () => {
+    // 弹跳功能 information 只跳一次 critical 直到窗口激活才会停止
+    // app.dock.bounce("critical");
+    // 更改底部扩展栏图标
+    // app.dock.setIcon(path.join(__static, '/appicon.png'));
+    
+    // 冒泡信息提示
+    const badgeString = app.dock.getBadge();
+    console.log(badgeString,'badgeString')
+
+    if (badgeString === '') {
+      app.dock.setBadge('1');
+      console.log(badgeString,'2333badgeString')
+    } else {
+      app.dock.setBadge((parseInt(badgeString) + 1).toString());
+    }
+
+    // let countssss = app.badgeCount;
+    // console.log(countssss,'counts')
+    // if (badge.count > 0) {
+    //     app.dock.setBadge('12345654');
+    // } else {
+    //     app.dock.setBadge('99000');
+    // }
+    // if (process.platform === 'darwin') {
+    //     app.dock.setBadge('2');
+    //     app.setBadgeCount(2);
+        
+    // }
+    
+
+    
+  });
+  
 
   // 生产环境
   // if (!isDev) {
@@ -115,7 +184,7 @@ function createWindow() {
   //   });
   // }
   // createLoginWins()
-  ipcMainFun(mainWindow,loginWindow)
+  ipcMainFun(mainWindow)
   
   // 崩溃重启
   // reLive(mainWindow);
@@ -154,10 +223,15 @@ app.on('ready', ()=>{
 })
 
 app.on('before-quit',()=>{
-  console.log('强制退出前！！！')
+  console.log('2333强制退出前！！！')
+  app.isQuiting = true
 })
 app.on('quit',()=>{
-  console.log('强制退出前！！！')
+  console.log('2333强制退出了2333！！！')
+  if(loginStore.get("isLogin")){
+    loginStore.set("isLogin",false)
+    console.log(loginStore.get("isLogin"),'islogin??')
+  }
 })
 
 app.on('window-all-closed', () => {
@@ -174,6 +248,7 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
   }
+
 })
 
 
@@ -306,20 +381,22 @@ function handleTray(){
   let imgUnread = nativeImage.createFromPath(unread)
 
   // let tray = new Tray(imgages)
-  let tray = new Tray(imgRead)
-  tray.setImage(imgUnread)
-  tray.destroy()
+
+  // let tray = new Tray(imgRead)
+  // tray.setImage(imgUnread)
+  // tray.destroy()
+
   tray = new Tray(imgRead)
 
-  tray.setImage(imgUnread)
+  // tray.setImage(imgUnread)
   
   tray.setToolTip('提示title')
   tray.setContextMenu(MenuTray)
 
-  // 双击 托盘图标 打开窗口
-  tray.on('double-click',function(){
-      mainWindow.show()
-  })
+  // // 双击 托盘图标 打开窗口
+  // tray.on('double-click',function(){
+  //     mainWindow.show()
+  // })
 
 }
 
