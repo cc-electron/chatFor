@@ -13,7 +13,7 @@ consoles.log('Hello World!');
 
 
 
-const ipcMainFun = (mainWindow,loginWindow)=>{
+const ipcMainFun = (mainWindow)=>{
     let settingsWindow
     ipcMain.on('synchronous-message', (event, arg) => {
         if (arg === 'center') {
@@ -88,7 +88,7 @@ const ipcMainFun = (mainWindow,loginWindow)=>{
         mainWindow.setResizable(arg)
     })
 
-    // 登陆处理逻辑 -- 显示父级页面
+    // 登陆处理逻辑
     ipcMain.on('logined', (event, arg) => {
         mainWindow.setSize(1000, 700)
         mainWindow.center()

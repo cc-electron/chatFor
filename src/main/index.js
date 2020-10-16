@@ -55,18 +55,6 @@ function createWindow() {
   // BrowserWindow.removeDevToolsExtension("Console");
   // BrowserWindow.removeDevToolsExtension("console");
 
-  // 保持窗口大小固定
-  // let mainWindowState = windowStateKeeper({
-  //   defaultWidth: 1000,
-  //   defaultHeight: 800
-  // });
-  // 'x': mainWindowState.x,
-  // 'y': mainWindowState.y,
-  // 'width': mainWindowState.width,
-  // 'height': mainWindowState.height,
-
-  // width: 470,
-  // height: 800,
 
   mainWindow = new BrowserWindow({
     // width: 470,
@@ -80,8 +68,6 @@ function createWindow() {
     devTools: false,
     show: true
   });
-  
-  // mainWindow.setResizable(false) // 用户是否可以手动调整窗口大小。
 
   mainWindow.setTitle('超信')
   // mainWindow.getNormalBounds()
@@ -90,30 +76,9 @@ function createWindow() {
   // let installed = BrowserWindow.getDevToolsExtensions()
   // console.log(installed);
 
-  const view = new BrowserView();
-  mainWindow.on('resize', ()=>{
-    // console.log('resizezzzzz')
-    
-  })
-  // 
-  // console.log('关闭主窗口')
+  // const view = new BrowserView();
+ 
   mainWindow.on('close', (event) => {
-      // event.preventDefault();
-      // // mainWindow.setSkipTaskbar(true)
-      // mainWindow.hide()
-
-      // console.log(mainWindow.isVisible(),'isVisible')
-      // if (process.platform === 'darwin') {
-      //   // 回收BrowserWindow对象
-      //   event.preventDefault()
-      //   // mainWindow.hide()
-      //   mainWindow.minimize()
-      // } else {
-      //   mainWindow.hide()
-      //   mainWindow.setSkipTaskbar(true)
-      //   event.preventDefault()
-      // }
-
       // 回收BrowserWindow对象
       // 窗口缩小到最小才能关闭程序
       if(mainWindow.isMinimized()||app.isQuiting){
@@ -121,6 +86,7 @@ function createWindow() {
       }else{
         event.preventDefault();
         // mainWindow.minimize();
+        app.isQuiting = true
         mainWindow.hide();
       }
 
@@ -132,8 +98,6 @@ function createWindow() {
     mainWindow = null;
   
   })
-  // win.isVisible() ? win.hide() : win.show();
-  
 
   // 生产环境
   // if (!isDev) {
@@ -151,40 +115,22 @@ function createWindow() {
   //   });
   // }
   // createLoginWins()
-  console.log('23333为了居中之前')
   ipcMainFun(mainWindow,loginWindow)
   
-  
-  // console.log('每次重新打开也是走的这里')
-  console.log('23333333！每次重新打开也是走的这里')
   // 崩溃重启
   // reLive(mainWindow);
 
-  // let size = screen.getPrimaryDisplay().workAreaSize
-  // let width = parseInt(size.width * 1)
-  // let height = parseInt(size.height * 1)
-  // loginStore.set("width",width)
-  // loginStore.set("height",height)
-  
-  // console.log('屏幕宽高',width,height)
-  // if(loginStore.get("isLogin")){
-  //   loginWindow.setSize(1000, 700)
-  //   loginWindow.center()
-  // }else{
-  //   loginWindow.setSize(470, 800)
-  //   loginWindow.center()
-  // }
-
-  console.log('23333居中',loginStore.get("isLogin"))
+  console.log('23333居中')
   if(loginStore.get("isLogin")){
+    console.log('2333已经登陆了')
     mainWindow.setSize(1000, 700)
     mainWindow.center()
     mainWindow.setResizable(true)
   }else{
+    console.log('2333没有登录')
     mainWindow.setSize(470, 800)
     mainWindow.center()
     mainWindow.setResizable(false)
-    console.log('23333为了居中')
   }
 
 }
@@ -223,7 +169,8 @@ app.on('window-all-closed', () => {
 
 // 当应用被激活时发出。 各种操作都可以触发此事件, 例如首次启动应用程序、尝试在应用程序已运行时或单击应用程序的坞站或任务栏图标时重新激活它。
 app.on('activate', () => {
-  mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+  mainWindow.isVisible() ? null : mainWindow.show();
+  app.isQuiting = false
   if (mainWindow === null) {
     createWindow()
   }
@@ -306,51 +253,6 @@ function handleTray(){
   //   tray = new Tray(`${__static}/icon.ico`)
   // }
 
-  // const contextMenu = Menu.buildFromTemplate([
-  //     {
-  //         label: '退出',
-  //         click: function(){
-  //             app.quit();
-  //         }
-  //     }
-  // ]);
-
-  // tray.setContextMenu(contextMenu);
-  // tray.setToolTip('应用标题');
-
-  // // 任务栏点击事件
-  // // let timeCount = 0
-  // // tray.on('click', function (Event) {
-  // //   setTimeout(() => {
-  // //     if (timeCount === 0) {
-  // //       console.log('单机事件11111111')
-  // //       timeCount = 0
-  // //     }
-  // //   }, 300)
-  // // })
-  
-
-  // tray.on('click',function(){
-  //   mainWindow.show();
-  // })
-  // // tray.on('left-click',function(){
-  // //   mainWindow.show();
-  // // })
-  // // tray.on('right-click',(e,b,p)=> {
-  // //   console.log('2333click')
-  // //   console.log(e,b,p)
-  // //   mainWindow.show();
-  // //   // mainWindow.setSkipTaskbar(false);
-  // // })
-
-  // if (mainWindow) {
-  //   if (mainWindow.isMinimized()) mainWindow.restore()
-  //   if (process.platform !== 'darwin') {
-  //     mainWindow.show()
-  //     mainWindow.setSkipTaskbar(false)
-  //   }
-  //   mainWindow.focus()
-  // }
   const MenuTray = Menu.buildFromTemplate([
   {
     label: '打开超信',
@@ -456,5 +358,3 @@ function handleTray(){
       })
       
 }
-
-export const createLoginWinx = createLoginWins;

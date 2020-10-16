@@ -47,7 +47,6 @@
 import {
     isvalidUsername
 } from '@/utils/validate'
-import {ipcTowCenter,ipcToResize,ipcToLogined} from '../../../tool/ipcRenderer.js'
 import {loginStore} from '../../../tool/storage.js'
 
 export default {
@@ -93,7 +92,6 @@ export default {
         
     },
     mounted() {
-        console.log("进入页面不让调整窗口")
         console.log(this.remember);
     },
     // beforeRouteLeave(to, from, next) {
@@ -111,9 +109,6 @@ export default {
             this.remember = !this.remember;
             localStorage.setItem('remember', this.remember ? true : "");
             // this.remember?loginStore.set("isLogin",true):loginStore.set("isLogin",false)
-            
-            // window.resizeTo(1000,750);
-            // ipcTowCenter().then(()=>{})
         },
         handleLogin() {
             this.$refs.loginForm.validate(valid => {
@@ -124,7 +119,7 @@ export default {
                         this.$router.push({
                             path: '/'
                         })
-                        ipcToLogined().then(()=>{})
+                        this.$electron.ipcRenderer.send('logined')
                         loginStore.set("isLogin",true)
                     }).catch(() => {
                         this.loading = false

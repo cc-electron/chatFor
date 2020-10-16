@@ -5,20 +5,10 @@
 </template>
 
 <script>
-import {loginStore} from '../tool/storage.js'
-import {ipcToLogined,ipcToLogout} from '../tool/ipcRenderer.js'
-
 export default {
   name: 'App',
   mounted(){
-    // 未登录
-    if(!loginStore.get("isLogin")){
-      ipcToLogout().then(()=>{})
-    }else{
-      // 已登录
-      ipcToLogined().then(()=>{})
-    }
-
+    console.log(this.$electron,'electron')
   }
 }
 </script>
