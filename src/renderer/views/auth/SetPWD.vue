@@ -4,36 +4,33 @@
         <div class="title">
             <img src="@/assets/icon_zhuce_top.png" alt="">
             <h3>
-                欢迎来到超信！
+                重置密码！
             </h3>
-            <h5>更加私密、更加安全</h5>
+            <h5>设置新的密码</h5>
         </div>
-        <el-form-item prop="username">
-            <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="账号" />
-            <img class="show-pwd" v-show="loginForm.username" @click="loginForm.username = ''" src="@/assets/icon_del.png" alt="">
-        </el-form-item>
-        <el-form-item prop="password">
-            <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on" placeholder="密码"></el-input>
-            <img class="show-pwd" v-show="!pwdType" @click="showPwd" src="@/assets/icon_eye_xs.png" alt="">
-            <img class="show-pwd" v-show="pwdType" @click="showPwd" src="@/assets/icon_eye_yc.png" alt="">
 
+        <el-form-item prop="pass">
+            <el-input :type="pwdType" v-model="loginForm.password" autocomplete="off" placeholder="新的6~12位数字字母组合密码"></el-input>
+            <img class="show-pwd" v-show="!pwdType" @click="pwdType = 'password'" src="@/assets/icon_eye_xs.png" alt="">
+            <img class="show-pwd" v-show="pwdType" @click="pwdType = ''" src="@/assets/icon_eye_yc.png" alt="">
         </el-form-item>
-        <div class="pwd-style">
-            <div class="remember-pwd" @click="rememberPwd">
-                <img v-show="!remember" src="@/assets/icon_jzmm_no.png" alt="">
-                <img v-show="remember" src="@/assets/icon_jzmm.png" alt="">
-                <span>记住密码</span>
-            </div>
-            <div class="forget-pwd" @click="toPath('forgetPWD')">
-                <span>忘记密码？</span>
-            </div>
-        </div>
+        <el-form-item prop="checkPass">
+            <el-input name="checkPass" :type="checkPwdType" v-model="loginForm.checkPass" autoComplete="on" placeholder="确认密码"></el-input>
+            <img class="show-pwd" v-show="!checkPwdType" @click="checkPwdType = 'password'" src="@/assets/icon_eye_xs.png" alt="">
+            <img class="show-pwd" v-show="checkPwdType" @click="checkPwdType = ''" src="@/assets/icon_eye_yc.png" alt="">
+        </el-form-item>
+        <div class="pwd-style"></div>
         <el-form-item>
-            <el-button type="primary" style="width:100%;" :disabled="!loginForm.username || !loginForm.password" :loading="loading" @click.native.prevent="handleLogin">
+            <el-button class="sure" type="primary" style="width:100%;" :disabled="!loginForm.password || !loginForm.checkPass" :loading="loading" @click.native.prevent="handleLogin">
                 登录
             </el-button>
         </el-form-item>
-        <p class="to-registered">还没账号？<span @click="toPath('register')">立即注册</span></p>
+        <el-form-item>
+            <el-button type="primary" plain style="width:100%;" @click="toPath(-1)">
+                上一步
+            </el-button>
+        </el-form-item>
+
     </el-form>
 </div>
 </template>
@@ -42,68 +39,58 @@
 import {
     isvalidUsername
 } from '@/utils/validate'
-import {loginStore} from '../../../tool/storage.js'
 
 export default {
     name: 'login',
     data() {
-        const validateUsername = (rule, value, callback) => {
-            if (!value) {
-                callback(new Error('请输入正确的用户名'))
-            } else {
-                callback()
-            }
-        }
         const validatePass = (rule, value, callback) => {
-            if (value.length < 5) {
-                callback(new Error('密码不能小于5位'))
+            if (value === '') {
+                callback(new Error('请输入密码'));
             } else {
-                callback()
+                if (this.loginForm.checkPass !== '') {
+                    this.$refs.loginForm.validateField('checkPass');
+                }
+                callback();
             }
-        }
+        };
+        const validatePass2 = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value !== this.loginForm.password) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            }
+        };
         return {
             loginForm: {
-                username: '',
-                password: ''
+                password: '',
+                checkPass: ''
             },
             loginRules: {
-                username: [{
-                    required: true,
-                    trigger: 'blur',
-                    validator: validateUsername
+                pass: [{
+                    validator: validatePass,
+                    trigger: 'blur'
                 }],
-                password: [{
-                    required: true,
-                    trigger: 'blur',
-                    validator: validatePass
-                }]
+                checkPass: [{
+                    validator: validatePass2,
+                    trigger: 'blur'
+                }],
             },
             loading: false,
             pwdType: 'password',
+            checkPwdType: 'password',
             remember: localStorage.getItem('remember')
         }
-    },
-    created(){
-        
     },
     mounted() {
         console.log(this.remember);
     },
-    // beforeRouteLeave(to, from, next) {
-    //     next();
-    // },
     methods: {
-        showPwd() {
-            if (this.pwdType === 'password') {
-                this.pwdType = ''
-            } else {
-                this.pwdType = 'password'
-            }
-        },
         rememberPwd() {
             this.remember = !this.remember;
             localStorage.setItem('remember', this.remember ? true : "");
-            // this.remember?loginStore.set("isLogin",true):loginStore.set("isLogin",false)
+
         },
         handleLogin() {
             this.$refs.loginForm.validate(valid => {
@@ -114,28 +101,29 @@ export default {
                         this.$router.push({
                             path: '/'
                         })
-                        this.$electron.ipcRenderer.send('logined')
-                        loginStore.set("isLogin",true)
                     }).catch(() => {
                         this.loading = false
                     })
                 } else {
                     console.log('error submit!!')
-                    loginStore.set("isLogin",false)
                     return false
                 }
             })
         },
         toPath(path) {
-            this.$router.push({
-                path: '/' + path
-            });
+            if (path == -1) {
+                this.$router.go(-1);
+            } else {
+                this.$router.push({
+                    path: '/' + path
+                });
+            }
         }
     }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .login-container {
     position: fixed;
     height: 100%;
@@ -294,7 +282,7 @@ export default {
     opacity: 0.4;
 }
 
-/deep/ .el-form-item__content .el-button {
+.sure {
     background-color: #1ab2ff;
     border-color: #1ab2ff;
     box-shadow: 0px 3px 12px 0px rgba(26, 178, 255, 0.3);

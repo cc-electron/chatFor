@@ -107,11 +107,10 @@ function createWindow() {
       }else{
         event.preventDefault();
         // mainWindow.minimize();
-        app.isQuiting = true
+        app.isQuiting = false
         console.log(loginStore.get("isLogin"),'islogin2333')
 
         console.log(tray,'istray')
-        
         
         if(loginStore.get("isLogin")){
           loginStore.set("isLogin",false)
@@ -243,10 +242,11 @@ app.on('window-all-closed', () => {
 
 // 当应用被激活时发出。 各种操作都可以触发此事件, 例如首次启动应用程序、尝试在应用程序已运行时或单击应用程序的坞站或任务栏图标时重新激活它。
 app.on('activate', () => {
-  mainWindow.isVisible() ? null : mainWindow.show();
   app.isQuiting = false
   if (mainWindow === null) {
     createWindow()
+  }else{
+    mainWindow.isVisible() ? null : mainWindow.show();
   }
 
 })
@@ -332,7 +332,7 @@ function handleTray(){
   {
     label: '打开超信',
     click: () => {
-      mainWindow.show()
+      mainWindow.show();
     }
   },
   {

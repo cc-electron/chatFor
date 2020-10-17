@@ -22,8 +22,10 @@ import Layout from '../views/layout/Layout'
   }
 **/
 export const constantRouterMap = [
-    { path: '/login', component: () => import('@/views/auth/Login'), hidden: true },
-    // { path: '/login', component: () => import('@/views/login/index'), hidden: true },
+    { path: '/login', name: "login", component: () => import('@/views/auth/Login'), hidden: true },
+    { path: '/register', name: "register", component: () => import('@/views/auth/Registered'), hidden: true },
+    { path: '/forgetPWD', name: "forget", component: () => import('@/views/auth/ForgetPWD'), hidden: true },
+    { path: '/setPWD', name: "set", component: () => import('@/views/auth/SetPWD'), hidden: true },
     { path: '/404', component: () => import('@/views/404'), hidden: true },
 
     {

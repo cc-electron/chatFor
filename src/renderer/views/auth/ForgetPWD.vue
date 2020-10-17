@@ -4,37 +4,35 @@
         <div class="title">
             <img src="@/assets/icon_zhuce_top.png" alt="">
             <h3>
-                欢迎来到超信！
+                忘记密码！
             </h3>
-            <h5>更加私密、更加安全</h5>
+            <h5>通过安全问题找回密码</h5>
         </div>
         <el-form-item prop="username">
             <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="账号" />
             <img class="show-pwd" v-show="loginForm.username" @click="loginForm.username = ''" src="@/assets/icon_del.png" alt="">
         </el-form-item>
-        <el-form-item prop="password">
-            <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on" placeholder="密码"></el-input>
-            <img class="show-pwd" v-show="!pwdType" @click="showPwd" src="@/assets/icon_eye_xs.png" alt="">
-            <img class="show-pwd" v-show="pwdType" @click="showPwd" src="@/assets/icon_eye_yc.png" alt="">
 
+        <el-select v-model="loginForm.value" placeholder="请选择安全问题">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+        </el-select>
+        <el-form-item prop="answer">
+            <el-input name="answer" type="text" v-model="loginForm.answer" autoComplete="on" placeholder="答案 " />
+            <img class="show-pwd" v-show="loginForm.answer" @click="loginForm.answer = ''" src="@/assets/icon_del.png" alt="">
         </el-form-item>
+
         <div class="pwd-style">
-            <div class="remember-pwd" @click="rememberPwd">
-                <img v-show="!remember" src="@/assets/icon_jzmm_no.png" alt="">
-                <img v-show="remember" src="@/assets/icon_jzmm.png" alt="">
-                <span>记住密码</span>
-            </div>
-            <div class="forget-pwd" @click="toPath('forgetPWD')">
-                <span>忘记密码？</span>
-            </div>
+            <p @click="toPath('setPWD')">下一步</p>
+
         </div>
         <el-form-item>
-            <el-button type="primary" style="width:100%;" :disabled="!loginForm.username || !loginForm.password" :loading="loading" @click.native.prevent="handleLogin">
-                登录
+            <el-button type="primary" style="width:100%;" :disabled="!loginForm.username || !loginForm.answer || !loginForm.value" :loading="loading" @click.native.prevent="handleLogin">
+                下一步
             </el-button>
         </el-form-item>
-        <p class="to-registered">还没账号？<span @click="toPath('register')">立即注册</span></p>
     </el-form>
+    <p class="back" @click="toPath(-1)">取消</p>
 </div>
 </template>
 
@@ -42,7 +40,6 @@
 import {
     isvalidUsername
 } from '@/utils/validate'
-import {loginStore} from '../../../tool/storage.js'
 
 export default {
     name: 'login',
@@ -54,17 +51,35 @@ export default {
                 callback()
             }
         }
-        const validatePass = (rule, value, callback) => {
-            if (value.length < 5) {
-                callback(new Error('密码不能小于5位'))
+        const validateAnswer = (rule, value, callback) => {
+            if (!value) {
+                callback(new Error('密保答案不能为空'))
             } else {
                 callback()
             }
         }
         return {
+            options: [{
+                value: '选项1',
+                label: '黄金糕'
+            }, {
+                value: '选项2',
+                label: '双皮奶'
+            }, {
+                value: '选项3',
+                label: '蚵仔煎'
+            }, {
+                value: '选项4',
+                label: '龙须面'
+            }, {
+                value: '选项5',
+                label: '北京烤鸭'
+            }],
+
             loginForm: {
                 username: '',
-                password: ''
+                answer: '',
+                value: '',
             },
             loginRules: {
                 username: [{
@@ -72,10 +87,10 @@ export default {
                     trigger: 'blur',
                     validator: validateUsername
                 }],
-                password: [{
+                answer: [{
                     required: true,
                     trigger: 'blur',
-                    validator: validatePass
+                    validator: validateAnswer
                 }]
             },
             loading: false,
@@ -83,15 +98,9 @@ export default {
             remember: localStorage.getItem('remember')
         }
     },
-    created(){
-        
-    },
     mounted() {
         console.log(this.remember);
     },
-    // beforeRouteLeave(to, from, next) {
-    //     next();
-    // },
     methods: {
         showPwd() {
             if (this.pwdType === 'password') {
@@ -103,7 +112,7 @@ export default {
         rememberPwd() {
             this.remember = !this.remember;
             localStorage.setItem('remember', this.remember ? true : "");
-            // this.remember?loginStore.set("isLogin",true):loginStore.set("isLogin",false)
+
         },
         handleLogin() {
             this.$refs.loginForm.validate(valid => {
@@ -114,28 +123,30 @@ export default {
                         this.$router.push({
                             path: '/'
                         })
-                        this.$electron.ipcRenderer.send('logined')
-                        loginStore.set("isLogin",true)
                     }).catch(() => {
                         this.loading = false
                     })
                 } else {
                     console.log('error submit!!')
-                    loginStore.set("isLogin",false)
                     return false
                 }
             })
         },
         toPath(path) {
-            this.$router.push({
-                path: '/' + path
-            });
+            if (path == -1) {
+                this.$router.go(-1);
+            } else {
+                this.$router.push({
+                    path: '/' + path
+                });
+            }
+
         }
     }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .login-container {
     position: fixed;
     height: 100%;
@@ -265,36 +276,30 @@ export default {
         }
     }
 
-    .to-registered {
+    .back {
+        position: absolute;
+        bottom: 32px;
+        width: 100%;
         text-align: center;
-        margin-top: 30px;
         font-size: 14px;
         color: #999999;
+        cursor: pointer;
+        font-weight: bold;
 
-        span {
-            color: #1ab2ff;
-            position: relative;
-            cursor: pointer;
-
-            &::after {
-                content: '';
-                position: absolute;
-                bottom: -2px;
-                left: 0;
-                width: 100%;
-                height: 1px;
-                background: #1ab2ff;
-            }
-        }
     }
 
+}
+
+.el-select {
+    width: 100%;
+    border-bottom: 1px solid #f2f2f2;
 }
 
 .is-disabled {
     opacity: 0.4;
 }
 
-/deep/ .el-form-item__content .el-button {
+.el-form-item__content .el-button {
     background-color: #1ab2ff;
     border-color: #1ab2ff;
     box-shadow: 0px 3px 12px 0px rgba(26, 178, 255, 0.3);

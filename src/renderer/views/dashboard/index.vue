@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name:{{names}}</div>
-    <div class="dashboard-text">roles:<span v-for='role in roless' :key='role'>{{role}}</span></div>
+    <!-- <div class="dashboard-text">name:{{names}}</div>
+    <div class="dashboard-text">roles:<span v-for='role in roless' :key='role'>{{role}}</span></div> -->
   </div>
 </template>
 
@@ -36,7 +36,7 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .dashboard {
   &-container {
-    margin: 30px;
+   
   }
   &-text {
     font-size: 30px;

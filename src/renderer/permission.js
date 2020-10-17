@@ -4,8 +4,9 @@ import NProgress from 'nprogress' // Progress 进度条
 import 'nprogress/nprogress.css'// Progress 进度条样式
 import { Message } from 'element-ui'
 
-const whiteList = ['/login'] // 不重定向白名单
+const whiteList = ['/login','/register','/forgetPWD','/setPWD'] // 不重定向白名单
 router.beforeEach((to, from, next) => {
+    console.log(123123);
   NProgress.start()
   if (store.getters.token) {
     console.log(to.path,'to.path')

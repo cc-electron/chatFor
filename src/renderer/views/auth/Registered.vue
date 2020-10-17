@@ -4,36 +4,35 @@
         <div class="title">
             <img src="@/assets/icon_zhuce_top.png" alt="">
             <h3>
-                欢迎来到超信！
+                欢迎注册超信！
             </h3>
-            <h5>更加私密、更加安全</h5>
+            <h5>注册即同意<span @click="toPath">《用户协议》</span></h5>
         </div>
         <el-form-item prop="username">
-            <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="账号" />
+            <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="6~12位数字字母组合账号" />
             <img class="show-pwd" v-show="loginForm.username" @click="loginForm.username = ''" src="@/assets/icon_del.png" alt="">
         </el-form-item>
         <el-form-item prop="password">
-            <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on" placeholder="密码"></el-input>
+            <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on" placeholder="6~12位数字字母组合密码"></el-input>
+            <img class="show-pwd" v-show="!pwdType" @click="showPwd" src="@/assets/icon_eye_xs.png" alt="">
+            <img class="show-pwd" v-show="pwdType" @click="showPwd" src="@/assets/icon_eye_yc.png" alt="">
+
+        </el-form-item>
+        <el-form-item prop="password">
+            <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on" placeholder="再次输入密码"></el-input>
             <img class="show-pwd" v-show="!pwdType" @click="showPwd" src="@/assets/icon_eye_xs.png" alt="">
             <img class="show-pwd" v-show="pwdType" @click="showPwd" src="@/assets/icon_eye_yc.png" alt="">
 
         </el-form-item>
         <div class="pwd-style">
-            <div class="remember-pwd" @click="rememberPwd">
-                <img v-show="!remember" src="@/assets/icon_jzmm_no.png" alt="">
-                <img v-show="remember" src="@/assets/icon_jzmm.png" alt="">
-                <span>记住密码</span>
-            </div>
-            <div class="forget-pwd" @click="toPath('forgetPWD')">
-                <span>忘记密码？</span>
-            </div>
+
         </div>
         <el-form-item>
             <el-button type="primary" style="width:100%;" :disabled="!loginForm.username || !loginForm.password" :loading="loading" @click.native.prevent="handleLogin">
-                登录
+                注册
             </el-button>
         </el-form-item>
-        <p class="to-registered">还没账号？<span @click="toPath('register')">立即注册</span></p>
+        <p class="to-registered">已有账号？<span @click="toPath('login')">立即登录</span></p>
     </el-form>
 </div>
 </template>
@@ -42,7 +41,6 @@
 import {
     isvalidUsername
 } from '@/utils/validate'
-import {loginStore} from '../../../tool/storage.js'
 
 export default {
     name: 'login',
@@ -83,15 +81,9 @@ export default {
             remember: localStorage.getItem('remember')
         }
     },
-    created(){
-        
-    },
     mounted() {
         console.log(this.remember);
     },
-    // beforeRouteLeave(to, from, next) {
-    //     next();
-    // },
     methods: {
         showPwd() {
             if (this.pwdType === 'password') {
@@ -103,7 +95,7 @@ export default {
         rememberPwd() {
             this.remember = !this.remember;
             localStorage.setItem('remember', this.remember ? true : "");
-            // this.remember?loginStore.set("isLogin",true):loginStore.set("isLogin",false)
+
         },
         handleLogin() {
             this.$refs.loginForm.validate(valid => {
@@ -114,14 +106,11 @@ export default {
                         this.$router.push({
                             path: '/'
                         })
-                        this.$electron.ipcRenderer.send('logined')
-                        loginStore.set("isLogin",true)
                     }).catch(() => {
                         this.loading = false
                     })
                 } else {
                     console.log('error submit!!')
-                    loginStore.set("isLogin",false)
                     return false
                 }
             })
@@ -135,7 +124,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .login-container {
     position: fixed;
     height: 100%;
@@ -294,7 +283,7 @@ export default {
     opacity: 0.4;
 }
 
-/deep/ .el-form-item__content .el-button {
+.el-form-item__content .el-button {
     background-color: #1ab2ff;
     border-color: #1ab2ff;
     box-shadow: 0px 3px 12px 0px rgba(26, 178, 255, 0.3);

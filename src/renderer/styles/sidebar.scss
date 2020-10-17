@@ -1,105 +1,170 @@
 #app {
-  background: #fff;
-  // 主体区域
-  .main-container {
-    min-height: 100%;
-    transition: margin-left .28s;
-    margin-left: 180px;
-  }
-
-   // 侧边栏
-  .sidebar-container {
-    .horizontal-collapse-transition {
-      transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
-    }
-    transition: width .28s;
-    width: 180px !important;
+    background: #fff;
     height: 100%;
-    position: fixed;
-    font-size: 0px;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1001;
-    overflow: hidden;
-    a {
-      display: inline-block;
-      width: 100%;
-    }
-    .svg-icon {
-      margin-right: 16px;
-    }
-    .el-menu {
-      border: none;
-      width: 100% !important;
-    }
-  }
 
-  .hideSidebar {
-    .sidebar-container {
-      width: 36px !important;
-    }
+    // 主体区域
     .main-container {
-      margin-left: 36px;
+        min-height: 100%;
+        transition: margin-left .28s;
+        margin-left: 320px;
     }
-    .submenu-title-noDropdown {
-      padding-left: 10px !important;
-      position: relative;
-      .el-tooltip {
-        padding: 0 10px !important;
-      }
-    }
-    .el-submenu {
-      &>.el-submenu__title {
-        padding-left: 10px !important;
-        &>span {
-          height: 0;
-          width: 0;
-          overflow: hidden;
-          visibility: hidden;
-          display: inline-block;
-        }
-        .el-submenu__icon-arrow {
-          display: none;
-        }
-      }
-    }
-  }
 
-  .sidebar-container .nest-menu .el-submenu>.el-submenu__title,
-  .sidebar-container .el-submenu .el-menu-item {
-    min-width: 180px !important;
-    background-color: $subMenuBg !important;
-    &:hover {
-      background-color: $menuHover !important;
+    input:focus {
+        border: 0;
+        outline: none;
+        box-shadow: none
     }
-  }
-  .el-menu--collapse .el-menu .el-submenu {
-    min-width: 180px !important;
-  }
 
-  //适配移动端
-  .mobile {
-    .main-container {
-      margin-left: 0px;
-    }
+    // 侧边栏
     .sidebar-container {
-      top: 50px;
-      transition: transform .28s;
-      width: 180px !important;
-    }
-    &.hideSidebar {
-      .sidebar-container {
-        transition-duration: 0.3s;
-        transform: translate3d(-180px, 0, 0);
-      }
-    }
-  }
+        user-select: none;
+        .horizontal-collapse-transition {
+            transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
+        }
 
-  .withoutAnimation {
-    .main-container,
-    .sidebar-container {
-      transition: none;
+        transition: width .28s;
+        width: 320px !important;
+        height: 100%;
+        position: fixed;
+        font-size: 0px;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1001;
+        overflow: hidden;
+        background: #f1f1f4;
+        border-right: 1px solid #ddd;
+
+        .userInfo {
+            width: 100%;
+            // background: #fff;
+            .user-desc {
+                display: flex;
+                align-items: center;
+                padding: 10px;
+                box-sizing: border-box;
+
+                .avatar {
+                    width: 40px;
+                    height: 40px;
+                    cursor: pointer;
+
+                    img {
+                        width: 40px;
+                        border-radius: 50%;
+
+                    }
+
+                    &.online {
+                        position: relative;
+
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            right: 0;
+                            bottom: 0;
+                            width: 16px;
+                            height: 16px;
+                            border: 3px solid #f0f0f0;
+                            background: #39cc7e;
+                            border-radius: 50%;
+                        }
+                    }
+
+                }
+
+                .user-name {
+                    margin-left: 10px;
+                    font-size: 12px;
+                    color: #333;
+                    flex: 1;
+                    cursor: pointer;
+                }
+
+                .user-more {
+                    cursor: pointer;
+
+                    img {
+                        width: 18px;
+                    }
+                }
+
+
+            }
+
+            .search {
+                padding: 0 10px 10px;
+                box-sizing: border-box;
+
+                .search-box {
+                    height: 30px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    background: #fff;
+                    cursor: pointer;
+                    display: flex;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    align-items: center;
+
+                    img {
+                        width: 15px;
+                        height: 15px;
+                        margin-right: 6px;
+                    }
+
+                    input {
+                        width: 100%;
+                        height: 100%;
+                        font-size: 12px;
+                        border: 0;
+                        background: #fff;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+
+            .chat-tab {
+                margin-top: 5px;
+                padding-bottom: 10px;
+                box-sizing: border-box;
+                display: flex;
+                border-bottom: 1px solid #ddd;
+
+                .tab-item {
+                    flex: 1;
+                    text-align: center;
+
+                    div {
+                        align-items: center;
+                        display: inline-block;
+                        cursor: pointer;
+
+                        img {
+                            width: 20px;
+                        }
+
+                        p {
+                            margin-top: 6px;
+                            font-size: 10px;
+                            color: #666;
+                        }
+                    }
+                    .tab-active{
+                        p{
+                            color: #2d81ff;
+                        }
+                    }
+
+
+                }
+            }
+           
+        }
+        .chat-list{
+            height: 100%;
+        }
+
     }
-  }
 }
