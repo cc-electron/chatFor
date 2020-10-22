@@ -11,6 +11,7 @@ import {
   nativeImage,
   // IOCounters
 } from "electron";
+const { autoUpdater } = require('electron-updater')
 const isDev = require("electron-is-dev");
 const menuTemplate = require('./menu')
 const Store = require('electron-store')
@@ -45,7 +46,7 @@ app.isQuiting = false;
   
   
 function createWindow() {
-  // makeUpdater()
+  makeUpdater()
   console.log(__static,'23333',path.join(__static, '/photo.png'))
 
   // 设置原生应用菜单

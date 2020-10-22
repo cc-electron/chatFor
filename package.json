@@ -31,6 +31,12 @@
   "build": {
     "productName": "MyApp",
     "appId": "com.electron.app",
+    "publish": [
+      {
+        "provider": "github",
+        "url": "https://github.com/cc-electron/chatFor/tree/release"
+      }
+    ],
     "asar": false,
     "directories": {
       "output": "build"
@@ -61,16 +67,15 @@
     },
     "mac": {
       "icon": "build/icons/icon.icns",
+      "artifactName": "${productName}_setup_${version}.${ext}",
       "target": [
         "dmg",
         "zip"
       ]
     },
     "win": {
-      "icon": "build/icons/icon.ico",
-      "target": [
-        "zip"
-      ]
+      "icon": "build/icons/icon.ico"
+      
     },
     "linux": {
       "icon": "build/icons"

@@ -1,0 +1,8 @@
+
+
+version: 0.0.1
+provider: github
+url: https://github.com/cc-electron/chatFor
+owner: yyccQQu
+repo: chatFor
+
